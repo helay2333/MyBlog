@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.green.mapper.ArticleMapper">
+    <select id="getMyList" resultType="com.example.green.model.ArticleInfo">
+        <!--写SQL记得在SQL编辑器里面写-->
+        select * from articleinfo where uid = #{uid}
+    </select>
+    <select id="getDetail" resultType="com.example.green.model.ArticleInfo">
+        select * from articleinfo where id=#{aid}
+    </select>
+    <update id="update">
+        <!--健全的代码, 也要判断uid也是一个人-->
+        update articleinfo set title = #{title}, content = #{content} where id = #{aid} and uid = #{uid}
+    </update>
+    
+    <select id="getList" resultType="com.example.green.model.ArticleInfo">
+        select * from articleinfo limit #{pSize} offset #{offset}
+    </select>
+    
+    <select id="getTotalCount" resultType="java.lang.Integer">
+        select count(*) from articleinfo
+    </select>
+
+    <!--addArt-->
+    <insert id="addArt">
+        insert into articleinfo(title, content, uid) values (#{title}, #{content}, #{uid})
+
+    </insert>
+    
+    <delete id="delete">
+        delete from articleinfo where id = #{id}
+    </delete>
+
+    <!--getUserByArtId-->
+    <select id="getUserByArtId" resultType="com.example.green.model.UserInfo">
+        select * from userinfo where id = (select uid from articleinfo where id = #{aid})
+    </select>
+
+    <select id="getArtCount" resultType="java.lang.Integer">
+        select count(*) from articleinfo GROUP BY uid HAVING uid = (select uid from articleinfo where id = #{id});
+    </select>
+
+    <update id="updateRcount">
+        update articleinfo set rcount = #{count} where id=#{aid}
+    </update>
+</mapper>

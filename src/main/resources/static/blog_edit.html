@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客编辑</title>
+
+    <!-- 引入自己写的样式 -->
+    <link rel="stylesheet" href="css/conmmon.css">
+    <link rel="stylesheet" href="css/blog_edit.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+    <!-- 引入 editor.md 的依赖 -->
+    <link rel="stylesheet" href="editor.md/css/editormd.min.css" />
+    <script src="js/jquery.min.js"></script>
+    <script src="editor.md/editormd.js"></script>
+    <script src="js/tools.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <!-- 导航栏 -->
+    <div class="nav">
+        <img src="img/logo2.jpg" alt="">
+        <span class="title">MyBlog</span>
+        <!-- 用来占据中间位置 -->
+        <span class="spacer"></span>
+        <a href="blog_list.html">探索</a>
+        <a href="myblog_list.html">个人主页</a>
+        <a href="blog_edit.html">写博客</a>
+        <li class="dropdown" id="touxiang">
+            <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                <img src="" id="photo" class="rounded-circle" style="width:28px; height: 28px;"/>
+            </a>
+          
+            <div class="dropdown-menu" style="background-color:rgba(51, 51, 51, 0.4);">
+              <a class="dropdown-item" href="setting.html" style="background-color:rgba(51, 51, 51, 0.4);color: rgb(255, 255, 255); height: 24px;">账号设置</a>
+              <a class="dropdown-item" href="javascript:onExit()"  style="background-color:rgba(51, 51, 51, 0.4);color: rgb(255, 255, 255); height: 24px">退出登录</a>
+            </div>
+          </li>
+        <!-- <a href="#">注销</a> -->
+    </div>
+    <!-- 编辑框容器 -->
+    <div class="blog-edit-container">
+        <!-- 标题编辑区 -->
+        <div class="title">
+            <input id="title" type="text" placeholder="在这里写下文章标题">
+            <button onclick="mysub()">发布文章</button>
+        </div>
+        <!-- 创建编辑器标签 -->
+        <div id="editorDiv">
+            <textarea id="editor-markdown" style="display:none;"></textarea>
+        </div>
+    </div>
+
+    <script>
+        myInfo()
+        var uid ;
+        var editor;
+        function initEdit(md){
+            // 编辑器设置
+            editor = editormd("editorDiv", {
+                // 这里的尺寸必须在这里设置. 设置样式会被 editormd 自动覆盖掉. 
+                width: "100%",
+                // 高度 100% 意思是和父元素一样高. 要在父元素的基础上去掉标题编辑区的高度
+                height: "calc(100% - 50px)",
+                // 编辑器中的初始内容
+                markdown: md,
+                // 指定 editor.md 依赖的插件路径
+                path: "editor.md/lib/",
+                saveHTMLToTextarea: true // 
+            });
+        }
+        initEdit("# 在这里写下一篇博客"); // 初始化编译器的值
+        function isLogin() {
+            $.ajax({
+                url:'/user/isLogin',
+                type:'get',
+                data:{},
+                success:function(result){
+                    if(result.code != 200 && result.data!='true'){
+                        document.getElementById("touxiang").hidden = true    
+                        console.log("妹登录")
+                        alert("用户未登录, 即将跳蛛请安登录页面")
+                        location.href = "/login.html"
+                    }
+                },
+                error:function(error){
+                    if(error!= null && error.status == 401){
+                        document.getElementById("touxiang").hidden = true   
+                        console.log("妹登录")   
+                        alert("用户未登录, 即将跳蛛请安登录页面")
+                        location.href = "/login.html"
+                    }
+                }
+            })
+        }
+        isLogin()
+        // 提交
+        function mysub(){
+            var title = jQuery("#title")
+            var content = editor.getValue()
+
+            if(title.val() == "") {
+                title.focus()
+                alert("请先输入标题")
+                return false
+            }
+            if(content == "") {
+                title.focus()
+                alert("请先输入正文")
+                return false;
+            }
+
+            console.log(title.val())
+
+            $.ajax({
+                url:'/art/addArticleInfo',
+                type:'post',
+                data:{
+                    title: title.val(),
+                    content : content,
+                    uid: uid
+                    
+                },
+                success:function(result){
+                    if(result.code == 200 && result.data>0){
+                    alert("添加成功")
+                    location.href = "myblog_list.html"
+                    
+                    }else{
+                        alert("添加失败")
+                    }
+                },
+                error:function(error){
+                    if(error!= null && error.status == 401){
+                        alert("用户未登录, 即将跳蛛请安登录页面")
+                        location.href = "/login.html"
+                    }
+                }
+
+            })
+        }
+    </script>
+</body>
+
+</html>

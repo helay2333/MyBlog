@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册页面</title>
+    <link rel="stylesheet" href="css/conmmon.css">
+    <link rel="stylesheet" href="css/login.css">
+    <!-- 引入Jquery -->
+    <script src="js/jquery.min.js"></script>
+</head>
+
+<body>
+    <!-- 导航栏 -->
+    <div class="nav">
+        <img src="img/logo2.jpg" alt="">
+        <span class="title">MyBlog</span>
+        <!-- 用来占据中间位置 -->
+        <span class="spacer"></span>
+    </div>
+    <!-- 版心 -->
+    <div class="login-container">
+        <!-- 中间的注册框 -->
+        <div class="login-dialog">
+            <h3>注册</h3>
+            <div class="row">
+                <span>用户名</span>
+                <input type="text" id="username">
+            </div>
+            <div class="row">
+                <span>密码</span>
+                <input type="password" id="password">
+            </div>
+            <div class="row">
+                <span>确认密码</span>
+                <input type="password" id="password2">
+            </div>
+            <div class="row">
+                <button id="submit" onclick="mysub()">提交</button>
+            </div>
+            <div class="row">
+                <a href="login.html" style="color: rgb(61, 69, 77); margin-left: 235px;">跳转至登录页面~</a>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function mysub() {
+        //非空校验
+        var username = jQuery("#username")
+        var password = jQuery("#password")
+        var password2 = jQuery("#password2")
+        if(username.val() == ""){
+            alert("请先输入用户名")
+            username.focus() //光标重置
+            return false
+        }
+        if(password.val() == ""){
+            alert("请先输入密码")
+            password.focus()
+            return false
+        }
+        if(password2.val() == ""){
+            alert("请先输入确认密码")
+            password2.focus()
+            return false
+        }
+        if(password.val() != password2.val()){
+            console.log(password.val());
+            console.log(password2.val());
+            alert("两次密码输入不一致, 请重新检查")
+            password.focus()
+            return false;
+        }
+        // 2. alert("发送ajax请求给后端")
+        jQuery.ajax({
+            url:'/user/reg',
+            type:'POST',
+            data:{
+                username:username.val(),
+                password:password.val()
+            },
+            success:function(result){
+                if(result.code == 200 && result.data == 1){
+                    //注册成功
+                    alert("恭喜, 注册成功")
+                    if(confirm("是否现在去登录页面")){
+                        location.href = "login.html";
+                    }
+                }else{
+                    alert(result.msg)
+                }
+            }
+        })
+        
+    }
+</script>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客正文</title>
+    <link rel="stylesheet" href="css/conmmon.css">
+    <link rel="stylesheet" href="css/blog_content.css">
+    <link rel="stylesheet" href="css/blog_list.css">
+
+    <link rel="stylesheet" href="editor.md/css/editormd.preview.min.css"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+    <script src="js/jquery.min.js"></script>
+    <script src="editor.md/editormd.js"></script>
+    <script src="editor.md/lib/marked.min.js"></script>
+    <script src="editor.md/lib/prettify.min.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/tools.js"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <!-- 导航栏 -->
+    <div class="nav">
+        <img src="img/logo2.jpg" alt="">
+        <span class="title">MyBlog</span>
+        <!-- 用来占据中间位置 -->
+        <span class="spacer"></span>
+        <a href="blog_list.html">探索</a>
+        <a href="myblog_list.html">个人主页</a>
+        <a href="blog_edit.html">写博客</a>
+        <li class="dropdown">
+            <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                <img src="" id="photo" class="rounded-circle" style="width:28px; height: 28px;"/>
+            </a>
+          
+            <div class="dropdown-menu" style="background-color:rgba(51, 51, 51, 0.4);">
+              <a class="dropdown-item" href="setting.html" style="background-color:rgba(51, 51, 51, 0.4);color: rgb(255, 255, 255); height: 24px;">账号设置</a>
+              <a class="dropdown-item" href="javascript:onExit()"  style="background-color:rgba(51, 51, 51, 0.4);color: rgb(255, 255, 255); height: 24px">退出登录</a>
+            </div>
+          </li>
+        
+    </div>
+    <!-- 版心 -->
+    <div class="container">
+        <!-- 左侧个人信息 -->
+        <div class="container-left">
+            <div class="card">
+                <img id="photo1" alt="">
+                <h3 id="username"></h3>
+                
+                <div class="counter">
+                    <span>文章</span>
+                    <span>Git</span>
+                </div>
+                <div class="counter">
+                    <span id="artCount" style="margin-left: 12px;">2</span>
+                    <span><a href="https://github.com/"><img src="img/git.png" style="width:28px; height: 28px;"></a></span>
+                </div>
+            </div>
+        </div>
+        <!-- 右侧内容详情 -->
+        <div class="container-right">
+            <div class="blog-content">
+                <!-- 博客标题 -->
+                <h3 id="title"></h3>
+                <!-- 博客时间 -->
+                <div class="date">
+                    <span id="date"></span>&nbsp;&nbsp;&nbsp;
+                    访问量: <span id="rcount"></span> &nbsp;&nbsp;&nbsp;&nbsp;
+                </div>
+                <!-- 博客正文 -->
+                <div id="editorDiv">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+            var editormd;
+            function initEdit(md){
+                editormd = editormd.markdownToHTML("editorDiv", {
+                markdown : md, // Also, you can dynamic set Markdown text
+                // htmlDecode : true,  // Enable / disable HTML tag encode.
+                // htmlDecode : "style,script,iframe",  // Note: If enabled, you should filter some dangerous HTML tags for website security.
+                });
+               
+            }
+            function getURLParam(key){
+                var params = location.search;
+                if(params.indexOf("?") >= 0){
+                    params = params.substring(1);
+                    var paramArr = params.split('&');
+                    for(var i = 0; i < paramArr.length; i++) {
+                        var namevalues = paramArr[i].split("=");
+                        if(namevalues[0] == key){
+                            return namevalues[1];
+                        }
+                    }
+                }else{
+                    return ""
+                }
+            }
+            //获取文章详情信息
+            function getArtDetail() {
+                var aid = getURLParam("id")
+                if(aid != null && aid > 0) {
+                    jQuery.ajax({
+                        url:'/art/detail',
+                        type:'POST',
+                        data:{
+                            aid:aid
+                        },
+                        success:function(result){
+
+                                if(result.code == 200 && result.data != null){
+                                    var art = result.data;
+                                    initEdit(art.content)
+                                    jQuery('#title').text(art.title)
+                                    jQuery('#date').text(art.createtime)
+                                    jQuery('#rcount').text(art.rcount)
+                                    
+                                }else{
+                                    
+                                }
+                        },
+                        error:function(error){
+                                if(error!= null && error.status == 401){
+                                alert("用户未登录, 即将跳蛛请安登录页面")
+                                location.href = "/login.html"
+                            }
+                        }
+                    })
+                }
+            }
+            getArtDetail()
+
+            //获取文章作者信息
+            function getAuthor(){
+                var id = getURLParam("id")
+                if(id != null && id > 0) {
+                    jQuery.ajax({
+                        url:'/art/getAuthor',
+                        type:'POST',
+                        data:{
+                            id:id
+                        },
+                        success:function(result){
+                            console.log("作者信息")
+                            
+                                if(result.code == 200 && result.data != null){
+                                    var user = result.data;
+                                    console.log(user)
+                                    jQuery('#photo1').prop("src",user.photo)
+                                    jQuery('#username').text(user.username)
+                                    
+                                }else{
+                                    
+                                }
+                        },
+                        error:function(error){
+                                if(error!= null && error.status == 401){
+                                alert("用户未登录, 即将跳蛛请安登录页面")
+                                location.href = "/login.html"
+                            }
+                        }
+                    })
+                    jQuery.ajax({
+                        url:'/art/getArtCount',
+                        type:'POST',
+                        data:{
+                            id:id
+                        },
+                        success:function(result){
+                            console.log("作者文章数量" )
+                            console.log( result)
+                                if(result.code == 200 && result.data != null){
+                                    jQuery('#artCount').text(result.data)
+                            
+                                }else{
+                                    
+                                }
+                        },
+                        error:function(error){
+                                if(error!= null && error.status == 401){
+                                alert("用户未登录, 即将跳蛛请安登录页面")
+                                location.href = "/login.html"
+                            }
+                        }
+                    })
+                    
+                }
+            }
+            getAuthor()
+           
+            myInfo()
+    </script> 
+</body>
+
+</html>

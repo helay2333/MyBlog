@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.green.mapper.UserMapper">
+    <insert id="add">
+        insert into userinfo(username, password, photo) values (#{username}, #{password}, #{photo})
+    </insert>
+
+    <select id="login" resultType="com.example.green.model.UserInfo">
+        select * from userinfo where
+        username=#{username} and password=#{password}
+    </select>
+    <update id="updatePhoto">
+        update userinfo set photo = #{photo} where id = #{id}
+    </update>
+
+    <update id="updatePassword">
+        update userinfo set password = #{password} where id = #{id}
+    </update>
+    
+    <select id="getUserByName" resultType="com.example.green.model.UserInfo">
+        select * from userinfo where username = #{username}
+    </select>
+    
+    <select id="getMyCount" resultType="java.lang.Integer">
+        select count(id) from articleinfo where uid = #{id}
+    </select>
+</mapper>

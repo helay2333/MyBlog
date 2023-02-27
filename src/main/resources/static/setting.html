@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账号设置</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/conmmon.css">
+    <link rel="stylesheet" href="css/blog_list.css">
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+	<script src="js/tools.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js" crossorigin="anonymous"></script>
+
+	<style>
+		.container-head, .container-password{
+			padding: 30px 30px;
+		}
+		.container-head{
+			border-bottom:1px solid rgb(61, 69, 77);
+		}
+		
+		a:hover {
+			color: rgb(95, 94, 96); /*鼠标移动到链接的颜色*/
+			text-decoration: underline;
+		}
+
+	</style>
+</head>
+
+<body>
+    <!-- 导航栏 -->
+    <div class="nav">
+        <img src="img/logo2.jpg" alt="">
+        <span class="title">MyBlog</span>
+        <!-- 用来占据中间位置 -->
+        <span class="spacer"></span>
+        <a href="blog_list.html">探索</a>
+        <a href="myblog_list.html">个人主页</a>
+        <a href="blog_edit.html">写博客</a>
+        <li class="dropdown">
+            <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                <img src="" id="photo" class="rounded-circle" style="width:28px; height: 28px;"/>
+            </a>
+          
+            <div class="dropdown-menu" style="background-color:rgba(51, 51, 51, 0.4);">
+              <a class="dropdown-item" href="setting.html" style="background-color:rgba(51, 51, 51, 0.4);color: rgb(255, 255, 255); height: 24px;">账号设置</a>
+              <a class="dropdown-item" href="javascript:onExit()"  style="background-color:rgba(51, 51, 51, 0.4);color: rgb(255, 255, 255); height: 24px">退出登录</a>
+            </div>
+          </li>
+        
+        <!-- <a href="#">注销</a> -->
+    </div>
+    <!-- 版心 -->
+    <div class="container">
+        <!-- 左侧个人信息 -->
+        <div class="container-left">
+            <div class="card">
+                <img id="photo1" alt="">
+                <h3 id="username"></h3>
+                
+                <div class="counter">
+                    <span>文章</span>
+                    <span>Git</span>
+                </div>
+                <div class="counter">
+                    <span id="artCount" style="margin-left: 12px;">2</span>
+                    <span><a href="https://github.com/"><img src="img/git.png" style="width:28px; height: 28px;"></a></span>
+                </div>
+            </div>
+        </div>
+        <!-- 右侧内容详情 -->
+        <div class="container-right">
+            <div class="container-head">
+				<!-- 上传头像 -->
+				<h6>修改头像</h6>
+				<br/>
+				<form class="mt-5" method="post" enctype="multipart/form-data" action="/user/upload">
+					<div class="form-group row mt-4">
+						<label class="col-sm-2 col-form-label text-right">选择头像:</label>
+						<div class="col-sm-10">
+							<div class="custom-file">
+								<input type="file" class="custom-file-input" id="head-image" name="headerImage" lang="es" required="">
+								<label class="custom-file-label" for="head-image" data-browse="文件">选择一张图片</label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group row mt-4">
+						<div class="col-sm-2"></div>
+						<div class="col-sm-10 text-center">
+							<button type="submit" class="btn btn-secondary text-white form-control">立即上传</button>
+						</div>
+					</div>
+				</form>
+				<!-- 修改密码 -->
+				
+			</div>
+            <div class="container-password" action="">
+				<h6>修改密码</h6>
+				<br/>
+				<form class="mt-5">
+					<div class="form-group row mt-4">
+						<label for="old-password" class="col-sm-2 col-form-label text-right">原密码:</label>
+						<div class="col-sm-10">
+							<input type="password" class="form-control" id="old-password" placeholder="请输入原始密码!" required>
+							<div class="invalid-feedback">
+								密码长度不能小于8位!
+							</div>
+						</div>
+					</div>
+					<div class="form-group row mt-4">
+						<label for="new-password" class="col-sm-2 col-form-label text-right">新密码:</label>
+						<div class="col-sm-10">
+							<input type="password" class="form-control" id="new-password" placeholder="请输入新的密码!" required>
+							<div class="invalid-feedback">
+								密码长度不能小于8位!
+							</div>
+						</div>
+					</div>
+					<div class="form-group row mt-4">
+						<label for="confirm-password" class="col-sm-2 col-form-label text-right">确认密码:</label>
+						<div class="col-sm-10">
+							<input type="password" class="form-control" id="confirm-password" placeholder="再次输入新密码!" required>
+							<div class="invalid-feedback">
+								两次输入的密码不一致!
+							</div>
+						</div>
+					</div>
+					
+				</form>
+				<div class="form-group row mt-4">
+					<div class="col-sm-2"></div>
+					<div class="col-sm-10 text-center">
+						<button id="submit" onclick="toconfirm()" class="btn btn-secondary text-white form-control" onclick="">立即保存</button>
+					</div>
+				</div>
+			</div>
+        </div>
+    </div>
+</body>
+<script>
+	function myInfo() {
+        jQuery.ajax({
+            url:'/user/myinfo',
+                type:"POST",
+                data:{},
+                success:function(result){
+                    if(result.code == 200 && result.data != null) {
+                        console.log(result);
+                        jQuery("#username").text(result.data.username);
+                        jQuery("#photo").prop("src",result.data.photo);
+                        jQuery("#photo1").prop("src",result.data.photo)
+                    }
+                },
+                
+        })
+        jQuery.ajax({
+            url:'/user/myartCount',
+                type:"POST",
+                data:{},
+                success:function(result){
+                    if(result.code == 200 && result.data != null) {
+                        jQuery('#artCount').text(result.data)
+                    }
+                },
+                
+        })
+        
+    }
+	myInfo()
+	function toconfirm() {
+		var oldpasssword = jQuery("#old-password")
+		var newpassword = jQuery("#new-password")
+		var confirmpassword = jQuery("#confirm-password")
+		if(oldpasssword.val() == ""){
+            alert("请先输入旧密码")
+            oldpasssword.focus()
+            return false
+        }
+        if(newpassword.val() == ""){
+            alert("请先输入新密码")
+            newpassword.focus()
+            return false
+        }
+		if(confirmpassword.val() == ""){
+            alert("请先输入确认密码")
+            confirmpassword.focus()
+            return false
+        }
+        if(newpassword.val() != confirmpassword.val()){
+            alert("两次密码输入不一致, 请重新检查")
+            newpassword.focus()
+            return false;
+        }
+
+		jQuery.ajax({
+                url:'/user/changePassword',
+                type:"POST",
+                data:{
+					password: newpassword.val(),
+					oldpasssword:oldpasssword.val()
+				},
+                success:function(result){
+                    if(result.code == 200 && result.data == 1) {
+						alert(result.msg)
+                        location.href = "myblog_list.html"
+                    }else{
+						alert(result.msg)
+					}
+                },
+                
+        })
+	}
+</script>
+</html>

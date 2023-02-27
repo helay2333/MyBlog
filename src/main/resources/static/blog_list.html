@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客列表</title>
+    <link rel="stylesheet" href="css/list.css">
+    <link rel="stylesheet" href="css/blog_list.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/tools.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <style>
+        
+        .nav{
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+        }
+        .container{
+            padding-top: 80px;
+            height: auto;
+        }
+        .container-right{
+            width: auto;
+        }
+        .blog-pagnation-wrapper{
+            height: 40px;
+            margin: 16px 0;
+            text-align: center;
+        }
+        .blog-pagnation-item{
+            display: inline-block;
+            padding: 8px;
+            border: 1px solid #d0d0d5;
+            color: #333;
+        }
+        .blog-pagnation-item:hover{
+            background: #4e4eeb;
+            color: #fff;
+        }
+        .blog-pagnation-item.actvie{
+            background: #4e4eeb;
+            color: #fff;
+        }
+
+    </style>
+
+</head>
+
+<body>
+    <!-- 导航栏 -->
+    <div class="nav">
+        <img src="img/logo2.jpg" alt="">
+        <span class="title">MyBlog</span>
+        <!-- 用来占据中间位置 -->
+        <span class="spacer"></span>
+        <a href="blog_list.html">探索</a>
+        <a href="myblog_list.html">个人主页</a>
+        <a href="blog_edit.html">写博客</a>
+        <li class="dropdown">
+            <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                <img src="" id="photo" class="rounded-circle" style="width:28px; height: 28px;"/>
+            </a>
+          
+            <div class="dropdown-menu" style="background-color:rgba(51, 51, 51, 0.4);">
+              <a class="dropdown-item" href="setting.html" style="background-color:rgba(51, 51, 51, 0.4);color: rgb(255, 255, 255); height: 24px;">账号设置</a>
+              <a class="dropdown-item" href="javascript:onExit()"  style="background-color:rgba(51, 51, 51, 0.4);color: rgb(255, 255, 255); height: 24px">退出登录</a>
+            </div>
+          </li>
+    </div>
+    <!-- 版心 -->
+    <div class="container">
+        <!-- 右侧内容详情 -->
+        <div class="container-right" style="width: 100%;">
+            <!-- 每一篇博客包含标题, 摘要, 时间 -->
+            <div id="listDiv">
+
+            </div>
+
+            <hr>
+            <div class="blog-pagnation-wrapper">
+                <button class="blog-pagnation-item" onclick="firstCli()">首页</button> 
+                <button class="blog-pagnation-item" onclick="beforeCli()">上一页</button>  
+                <button class="blog-pagnation-item" onclick="nextCli()">下一页</button>
+                <button class="blog-pagnation-item" onclick="lastCli()">末页</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        myInfo()
+        var pIndex = 1; //当前页码
+        var pSize = 2; //当前页显示个数
+        var totalPage = 1; // 总页数
+        //初始化分页参数, 尝试从url中获取pindex
+        function initPageParam(){
+            var pi = getURLParam("pIndex")
+            if(pi != ""){
+                pIndex = pi;
+            }
+            var ps = getURLParam("pSize")
+            if(ps != ""){
+                pSize = ps;
+            }
+        }
+
+        function getTotalPage(){
+            jQuery.ajax({
+                url:'/art/getTotalPage',
+                type:"GET",
+                data:{
+                    pSize : pSize
+                },
+                success:function(result){
+                    if(result.code == 200 && result.data != null ){
+                        totalPage = result.data;
+                }
+            }
+            
+            })
+        }
+        getTotalPage()
+
+        initPageParam()
+        //查询分页数据
+        function getList() {
+            jQuery.ajax({
+                url:'/art/list',
+                type:"GET",
+                data:{
+                    pIndex : pIndex,
+                    pSize : pSize
+                },
+                success:function(result){
+                console.log(result)
+                    if(result.code == 200 && result.data != null && result.data.length > 0){
+                        var finalHtml = ""
+                        for(var i = 0 ; i < result.data.length; i++) {
+
+                            var item = result.data[i];
+                            finalHtml +='<div class="blog" style="border: 0.5px solid rgb(119, 129, 139);">';
+                            finalHtml+='<div class="title">'+item.title+'</div>';
+                            finalHtml+='<div class="date">'+item.createtime+'</div>';
+                            finalHtml+='<div class="desc">';
+                            finalHtml+=item.content
+                            finalHtml+='</div>';
+                            
+                            finalHtml+='<a href="blog_content.html?id='+item.id+'" class="detail">查看全文 &gt;&gt;</a>';
+                            finalHtml+='</div>';
+                        }
+                        jQuery('#listDiv').html(finalHtml)
+                    }
+                }
+            
+            })
+        }
+        getList()
+        
+        function firstCli(){
+            location.href = "blog_list.html"
+        }
+        //上一页
+        function beforeCli(){
+            if(pIndex <=1){
+                alert("已经是最前面了")
+                return false
+            }
+            pIndex = parseInt(pIndex) - 1
+            location.href = "blog_list.html?pIndex="+pIndex+"&pSize="+pSize;
+        }
+        function nextCli(){
+            console.log(parseInt(pIndex));
+            pIndex = parseInt(pIndex) + 1
+            console.log(pIndex);
+            if(pIndex > totalPage){
+                alert("已经是最后一页了");
+                return false;
+            }
+            location.href = "blog_list.html?pIndex="+pIndex+"&pSize="+pSize;
+        }
+
+        function lastCli(){
+            pIndex = totalPage
+            location.href = "blog_list.html?pIndex="+pIndex+"&pSize="+pSize;
+        }
+    </script>
+</body>
+</html>
